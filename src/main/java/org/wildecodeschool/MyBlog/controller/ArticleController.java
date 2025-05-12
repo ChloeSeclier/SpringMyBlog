@@ -7,6 +7,7 @@ import org.wildecodeschool.MyBlog.model.Article;
 import org.wildecodeschool.MyBlog.repository.ArticleRepository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -71,5 +72,41 @@ public class ArticleController {
         }
         articleRepository.delete((articleToDelete));
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search-title")
+    public ResponseEntity<List<Article>> getArticlesByTitle(@RequestParam String searchTerms){
+        List<Article> articles = articleRepository.findByTitle(searchTerms);
+        if(articles.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(articles);
+    }
+
+    @GetMapping("/contains-world")
+    public ResponseEntity<List<Article>> getArticlesByContent(@RequestParam String searchTerms){
+        List<Article> articles = articleRepository.findByContentContaining(searchTerms);
+        if(articles.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(articles);
+    }
+
+    @GetMapping("/filter-date")
+    public ResponseEntity<List<Article>> getArticlesCreatedAfter(@RequestParam LocalDateTime dateFilter){
+        List<Article> articles = articleRepository.findByCreatedAtAfter(dateFilter);
+        if(articles.isEmpty()){
+            return  ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(articles);
+    }
+
+    @GetMapping("/top2")
+    public  ResponseEntity<List<Article>> getLastFiveArticles(){
+        List<Article> articles = articleRepository.findFirst2ByOrderByCreatedAt();
+        if(articles.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(articles);
     }
 }
